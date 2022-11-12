@@ -60,13 +60,19 @@ export type AdminMintCreateInput = {
 }
 
 export type AdminMintUpdateInput = {
+  addMemo?: InputMaybe<Scalars['Boolean']>
   address?: InputMaybe<Scalars['String']>
+  airdropAmount?: InputMaybe<Scalars['Int']>
+  airdropMax?: InputMaybe<Scalars['Int']>
+  airdropSecretKey?: InputMaybe<Scalars['String']>
   coinGeckoId?: InputMaybe<Scalars['String']>
   decimals?: InputMaybe<Scalars['Int']>
+  default?: InputMaybe<Scalars['Boolean']>
+  enabled?: InputMaybe<Scalars['Boolean']>
   logoUrl?: InputMaybe<Scalars['String']>
   name?: InputMaybe<Scalars['String']>
+  order?: InputMaybe<Scalars['Int']>
   symbol?: InputMaybe<Scalars['String']>
-  type?: InputMaybe<MintType>
 }
 
 export type AdminUserCreateInput = {
@@ -240,6 +246,7 @@ export type Mutation = {
   adminUpdateUser?: Maybe<User>
   login?: Maybe<AuthToken>
   logout?: Maybe<Scalars['Boolean']>
+  userAddEmail?: Maybe<User>
   userAppEnvAddAllowedIp?: Maybe<AppEnv>
   userAppEnvAddAllowedUa?: Maybe<AppEnv>
   userAppEnvAddBlockedIp?: Maybe<AppEnv>
@@ -325,6 +332,10 @@ export type MutationAdminUpdateUserArgs = {
 
 export type MutationLoginArgs = {
   input: UserLoginInput
+}
+
+export type MutationUserAddEmailArgs = {
+  email: Scalars['String']
 }
 
 export type MutationUserAppEnvAddAllowedIpArgs = {
@@ -4666,6 +4677,16 @@ export type MeQuery = {
     name?: string | null
     username: string
     role?: UserRole | null
+    emails?: Array<{ __typename?: 'UserEmail'; id: string; createdAt: any; updatedAt: any; email: string }> | null
+    identities?: Array<{
+      __typename?: 'UserIdentity'
+      id: string
+      createdAt: any
+      updatedAt: any
+      type?: UserIdentityType | null
+      externalId: string
+      profile: any
+    }> | null
   } | null
 }
 
@@ -4997,6 +5018,16 @@ export type UserEmailDetailsFragment = {
   email: string
 }
 
+export type UserIdentityDetailsFragment = {
+  __typename?: 'UserIdentity'
+  id: string
+  createdAt: any
+  updatedAt: any
+  type?: UserIdentityType | null
+  externalId: string
+  profile: any
+}
+
 export type AdminCreateUserMutationVariables = Exact<{
   input: AdminUserCreateInput
 }>
@@ -5139,6 +5170,26 @@ export type UserSearchUsersQuery = {
     username: string
     role?: UserRole | null
   }> | null
+}
+
+export type UserAddEmailMutationVariables = Exact<{
+  email: Scalars['String']
+}>
+
+export type UserAddEmailMutation = {
+  __typename?: 'Mutation'
+  updated?: {
+    __typename?: 'User'
+    id: string
+    createdAt: any
+    updatedAt: any
+    avatarUrl?: string | null
+    email?: string | null
+    name?: string | null
+    username: string
+    role?: UserRole | null
+    emails?: Array<{ __typename?: 'UserEmail'; id: string; createdAt: any; updatedAt: any; email: string }> | null
+  } | null
 }
 
 export type WalletDetailsFragment = {
@@ -6103,6 +6154,16 @@ export const UserEmailDetailsFragmentDoc = gql`
     email
   }
 `
+export const UserIdentityDetailsFragmentDoc = gql`
+  fragment UserIdentityDetails on UserIdentity {
+    id
+    createdAt
+    updatedAt
+    type
+    externalId
+    profile
+  }
+`
 export const WalletAirdropResponseDetailsFragmentDoc = gql`
   fragment WalletAirdropResponseDetails on WalletAirdropResponse {
     signature
@@ -6682,9 +6743,17 @@ export const MeDocument = gql`
   query Me {
     me {
       ...UserDetails
+      emails {
+        ...UserEmailDetails
+      }
+      identities {
+        ...UserIdentityDetails
+      }
     }
   }
   ${UserDetailsFragmentDoc}
+  ${UserEmailDetailsFragmentDoc}
+  ${UserIdentityDetailsFragmentDoc}
 `
 
 export function useMeQuery(options?: Omit<Urql.UseQueryArgs<MeQueryVariables>, 'query'>) {
@@ -6911,6 +6980,22 @@ export function useUserSearchUsersQuery(options: Omit<Urql.UseQueryArgs<UserSear
     query: UserSearchUsersDocument,
     ...options,
   })
+}
+export const UserAddEmailDocument = gql`
+  mutation UserAddEmail($email: String!) {
+    updated: userAddEmail(email: $email) {
+      ...UserDetails
+      emails {
+        ...UserEmailDetails
+      }
+    }
+  }
+  ${UserDetailsFragmentDoc}
+  ${UserEmailDetailsFragmentDoc}
+`
+
+export function useUserAddEmailMutation() {
+  return Urql.useMutation<UserAddEmailMutation, UserAddEmailMutationVariables>(UserAddEmailDocument)
 }
 export const AdminDeleteWalletDocument = gql`
   mutation AdminDeleteWallet($walletId: String!) {

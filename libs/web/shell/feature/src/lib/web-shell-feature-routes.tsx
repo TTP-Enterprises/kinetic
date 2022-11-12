@@ -8,6 +8,7 @@ const WebAdminFeature = lazy(async () => import('@kin-kinetic/web/admin/feature'
 const WebAppFeature = lazy(async () => import('@kin-kinetic/web/app/feature'))
 const WebAuthFeature = lazy(async () => import('@kin-kinetic/web/auth/feature'))
 const WebDevFeature = lazy(async () => import('@kin-kinetic/web/dev/feature'))
+const WebProfileFeature = lazy(async () => import('@kin-kinetic/web/profile/feature'))
 const WebServerFeature = lazy(async () => import('@kin-kinetic/web/server/feature'))
 const WebToolboxFeature = lazy(async () => import('@kin-kinetic/web/toolbox/feature'))
 
@@ -22,6 +23,7 @@ export function WebShellFeatureRoutes() {
         <Route path="admin/*" element={<WebAdminFeature />} />
         <Route path="apps/*" element={<WebAppFeature />} />
         <Route path="dev/*" element={<WebDevFeature />} />
+        <Route path="profile/*" element={<WebProfileFeature />} />
       </Route>
       <Route path="toolbox/*" element={<WebToolboxFeature />} />
       <Route path="*" element={<NotFound />} />

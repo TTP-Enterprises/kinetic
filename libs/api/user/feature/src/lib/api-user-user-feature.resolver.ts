@@ -1,8 +1,8 @@
 import { AppUser } from '@kin-kinetic/api/app/data-access'
-import { ApiAuthGraphqlGuard } from '@kin-kinetic/api/auth/data-access'
+import { ApiAuthGraphqlGuard, CtxUser } from '@kin-kinetic/api/auth/data-access'
 import { ApiUserUserDataAccessService, User, UserSearchUserInput } from '@kin-kinetic/api/user/data-access'
 import { UseGuards } from '@nestjs/common'
-import { Args, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql'
+import { Args, Mutation, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql'
 
 @Resolver(() => User)
 @UseGuards(ApiAuthGraphqlGuard)
@@ -12,6 +12,11 @@ export class ApiUserUserFeatureResolver {
   @Query(() => [User], { nullable: true })
   userSearchUsers(@Args('input') input: UserSearchUserInput) {
     return this.service.userSearchUsers(input)
+  }
+
+  @Mutation(() => User, { nullable: true })
+  userAddEmail(@CtxUser() user: User, @Args('email') email: string) {
+    return this.service.userAddEmail(user.id, email)
   }
 
   @ResolveField(() => [AppUser], { nullable: true })

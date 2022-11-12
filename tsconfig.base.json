@@ -59,6 +59,8 @@
       "@kin-kinetic/web/keypair/data-access": ["libs/web/keypair/data-access/src/index.ts"],
       "@kin-kinetic/web/keypair/feature": ["libs/web/keypair/feature/src/index.ts"],
       "@kin-kinetic/web/keypair/ui": ["libs/web/keypair/ui/src/index.ts"],
+      "@kin-kinetic/web/profile/feature": ["libs/web/profile/feature/src/index.ts"],
+      "@kin-kinetic/web/profile/ui": ["libs/web/profile/ui/src/index.ts"],
       "@kin-kinetic/web/server/data-access": ["libs/web/server/data-access/src/index.ts"],
       "@kin-kinetic/web/server/feature": ["libs/web/server/feature/src/index.ts"],
       "@kin-kinetic/web/server/ui": ["libs/web/server/ui/src/index.ts"],

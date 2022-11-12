@@ -58,13 +58,19 @@ export type AdminMintCreateInput = {
 }
 
 export type AdminMintUpdateInput = {
+  addMemo?: InputMaybe<Scalars['Boolean']>
   address?: InputMaybe<Scalars['String']>
+  airdropAmount?: InputMaybe<Scalars['Int']>
+  airdropMax?: InputMaybe<Scalars['Int']>
+  airdropSecretKey?: InputMaybe<Scalars['String']>
   coinGeckoId?: InputMaybe<Scalars['String']>
   decimals?: InputMaybe<Scalars['Int']>
+  default?: InputMaybe<Scalars['Boolean']>
+  enabled?: InputMaybe<Scalars['Boolean']>
   logoUrl?: InputMaybe<Scalars['String']>
   name?: InputMaybe<Scalars['String']>
+  order?: InputMaybe<Scalars['Int']>
   symbol?: InputMaybe<Scalars['String']>
-  type?: InputMaybe<MintType>
 }
 
 export type AdminUserCreateInput = {
@@ -238,6 +244,7 @@ export type Mutation = {
   adminUpdateUser?: Maybe<User>
   login?: Maybe<AuthToken>
   logout?: Maybe<Scalars['Boolean']>
+  userAddEmail?: Maybe<User>
   userAppEnvAddAllowedIp?: Maybe<AppEnv>
   userAppEnvAddAllowedUa?: Maybe<AppEnv>
   userAppEnvAddBlockedIp?: Maybe<AppEnv>
@@ -323,6 +330,10 @@ export type MutationAdminUpdateUserArgs = {
 
 export type MutationLoginArgs = {
   input: UserLoginInput
+}
+
+export type MutationUserAddEmailArgs = {
+  email: Scalars['String']
 }
 
 export type MutationUserAppEnvAddAllowedIpArgs = {
@@ -1073,6 +1084,16 @@ export const UserEmailDetails = gql`
     email
   }
 `
+export const UserIdentityDetails = gql`
+  fragment UserIdentityDetails on UserIdentity {
+    id
+    createdAt
+    updatedAt
+    type
+    externalId
+    profile
+  }
+`
 export const WalletAirdropResponseDetails = gql`
   fragment WalletAirdropResponseDetails on WalletAirdropResponse {
     signature
@@ -1475,9 +1496,17 @@ export const Me = gql`
   query Me {
     me {
       ...UserDetails
+      emails {
+        ...UserEmailDetails
+      }
+      identities {
+        ...UserIdentityDetails
+      }
     }
   }
   ${UserDetails}
+  ${UserEmailDetails}
+  ${UserIdentityDetails}
 `
 export const AdminMintCreate = gql`
   mutation AdminMintCreate($input: AdminMintCreateInput!) {
@@ -1633,6 +1662,18 @@ export const UserSearchUsers = gql`
     }
   }
   ${UserDetails}
+`
+export const UserAddEmail = gql`
+  mutation UserAddEmail($email: String!) {
+    updated: userAddEmail(email: $email) {
+      ...UserDetails
+      emails {
+        ...UserEmailDetails
+      }
+    }
+  }
+  ${UserDetails}
+  ${UserEmailDetails}
 `
 export const AdminDeleteWallet = gql`
   mutation AdminDeleteWallet($walletId: String!) {
@@ -5609,6 +5650,16 @@ export type MeQuery = {
     name?: string | null
     username: string
     role?: UserRole | null
+    emails?: Array<{ __typename?: 'UserEmail'; id: string; createdAt: any; updatedAt: any; email: string }> | null
+    identities?: Array<{
+      __typename?: 'UserIdentity'
+      id: string
+      createdAt: any
+      updatedAt: any
+      type?: UserIdentityType | null
+      externalId: string
+      profile: any
+    }> | null
   } | null
 }
 
@@ -5940,6 +5991,16 @@ export type UserEmailDetailsFragment = {
   email: string
 }
 
+export type UserIdentityDetailsFragment = {
+  __typename?: 'UserIdentity'
+  id: string
+  createdAt: any
+  updatedAt: any
+  type?: UserIdentityType | null
+  externalId: string
+  profile: any
+}
+
 export type AdminCreateUserMutationVariables = Exact<{
   input: AdminUserCreateInput
 }>
@@ -6082,6 +6143,26 @@ export type UserSearchUsersQuery = {
     username: string
     role?: UserRole | null
   }> | null
+}
+
+export type UserAddEmailMutationVariables = Exact<{
+  email: Scalars['String']
+}>
+
+export type UserAddEmailMutation = {
+  __typename?: 'Mutation'
+  updated?: {
+    __typename?: 'User'
+    id: string
+    createdAt: any
+    updatedAt: any
+    avatarUrl?: string | null
+    email?: string | null
+    name?: string | null
+    username: string
+    role?: UserRole | null
+    emails?: Array<{ __typename?: 'UserEmail'; id: string; createdAt: any; updatedAt: any; email: string }> | null
+  } | null
 }
 
 export type WalletDetailsFragment = {

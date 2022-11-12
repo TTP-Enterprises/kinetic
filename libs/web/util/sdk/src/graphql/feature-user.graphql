@@ -16,6 +16,15 @@ fragment UserEmailDetails on UserEmail {
   email
 }
 
+fragment UserIdentityDetails on UserIdentity {
+  id
+  createdAt
+  updatedAt
+  type
+  externalId
+  profile
+}
+
 mutation AdminCreateUser($input: AdminUserCreateInput!) {
   created: adminCreateUser(input: $input) {
     ...UserDetails
@@ -55,5 +64,14 @@ query AdminUsers {
 query UserSearchUsers($input: UserSearchUserInput!) {
   items: userSearchUsers(input: $input) {
     ...UserDetails
+  }
+}
+
+mutation UserAddEmail($email: String!) {
+  updated: userAddEmail(email: $email) {
+    ...UserDetails
+    emails {
+      ...UserEmailDetails
+    }
   }
 }

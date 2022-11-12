@@ -18,5 +18,11 @@ mutation Logout {
 query Me {
   me {
     ...UserDetails
+    emails {
+      ...UserEmailDetails
+    }
+    identities {
+      ...UserIdentityDetails
+    }
   }
 }

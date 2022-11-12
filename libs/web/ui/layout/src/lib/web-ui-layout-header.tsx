@@ -61,7 +61,10 @@ export function WebUiLayoutHeader() {
                   <br />
                   <MenuDivider />
                   <MenuItem as={NavLink} to={'/apps'}>
-                    Your Apps
+                    My Apps
+                  </MenuItem>
+                  <MenuItem as={NavLink} to={'/profile'}>
+                    My Profile
                   </MenuItem>
                   {user?.role === 'Admin' && (
                     <>

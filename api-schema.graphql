@@ -234,6 +234,7 @@ type Mutation {
   adminUpdateUser(input: AdminUserUpdateInput!, userId: String!): User
   login(input: UserLoginInput!): AuthToken
   logout: Boolean
+  userAddEmail(email: String!): User
   userAppEnvAddAllowedIp(appEnvId: String!, ip: String!): AppEnv
   userAppEnvAddAllowedUa(appEnvId: String!, ua: String!): AppEnv
   userAppEnvAddBlockedIp(appEnvId: String!, ip: String!): AppEnv

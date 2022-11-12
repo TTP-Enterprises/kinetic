@@ -29,4 +29,15 @@ export class ApiUserUserDataAccessService {
         }))
       })
   }
+
+  userAddEmail(userId: string, email: string) {
+    return this.data.user.update({
+      where: { id: userId },
+      data: {
+        emails: {
+          create: { email },
+        },
+      },
+    })
+  }
 }
