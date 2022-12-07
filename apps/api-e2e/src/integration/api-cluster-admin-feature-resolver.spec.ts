@@ -1,3 +1,4 @@
+import { Keypair } from '@kin-kinetic/keypair'
 import { INestApplication } from '@nestjs/common'
 import { Response } from 'supertest'
 import { AdminClusters, AdminCreateApp, AdminMintCreate, AdminMintCreateInput } from '../generated/api-sdk'
@@ -52,9 +53,10 @@ describe('Cluster Admin (e2e)', () => {
         await runGraphQLQueryAdmin(app, token, AdminCreateApp, {
           input: { index, name },
         })
+        const keypair = Keypair.random()
         const clusterId = 'solana-devnet'
         const input: AdminMintCreateInput = {
-          address: '3SaUThdYFoUX2FYUi9ZPf2TKTu3UYKhNHhXb2Y6najRg',
+          address: keypair.publicKey,
           clusterId,
           decimals: 9,
           name: 'Hello Token',
