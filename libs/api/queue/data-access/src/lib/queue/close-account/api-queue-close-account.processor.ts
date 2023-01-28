@@ -1,27 +1,28 @@
-import { validateCloseAccount } from '@kin-kinetic/api/account/data-access'
+import { getAppKey } from '@kin-kinetic/api/core/util'
+import { ApiKineticService, validateCloseAccount } from '@kin-kinetic/api/kinetic/data-access'
 import { Commitment } from '@kin-kinetic/solana'
 import { Process, Processor } from '@nestjs/bull'
 import { Logger } from '@nestjs/common'
 import { DoneCallback, Job } from 'bull'
-import { QueueType } from '../../entity/queue-type.enum'
+import { QueueOptions, QueueType } from '../../entity/queue-type.enum'
 import { ApiQueueCloseAccountService } from './api-queue-close-account.service'
 
 @Processor(QueueType.CloseAccount)
 export class ApiQueueCloseAccountProcessor {
   private readonly logger = new Logger(ApiQueueCloseAccountProcessor.name)
 
-  constructor(private readonly service: ApiQueueCloseAccountService) {}
+  constructor(private readonly kinetic: ApiKineticService, private readonly service: ApiQueueCloseAccountService) {}
 
-  @Process({ name: 'process' })
+  @Process(QueueOptions[QueueType.CloseAccount])
   async handleProcess(job: Job, cb: DoneCallback) {
     const { account, environment, index, mint, mints, wallets } = job.data
 
-    this.logger.debug(`${job.id} Waiting 1 seconds...`)
-    await new Promise((resolve) => setTimeout(resolve, 1000))
     this.logger.debug(`${job.id} Start processing...`)
+    const commitment = Commitment.Finalized
 
     try {
-      const accountInfo = await this.service.account.getAccountInfo(environment, index, account)
+      const appKey = getAppKey(environment, index)
+      const accountInfo = await this.kinetic.getAccountInfo(appKey, account, mint, commitment)
 
       try {
         validateCloseAccount({ info: accountInfo, mint, mints, wallets })
@@ -30,14 +31,12 @@ export class ApiQueueCloseAccountProcessor {
           `${job.id} Account can close! ${JSON.stringify({ info: accountInfo, mint, mints, wallets }, null, 2)}`,
         )
 
-        const { appEnv, appKey } = await this.service.data.getAppEnvironment(environment, index)
-
-        const transaction = await this.service.account.handleCloseAccount(
+        const appEnv = await this.service.data.getAppEnvironmentByAppKey(appKey)
+        const transaction = await this.kinetic.handleCloseAccount(
           {
-            commitment: Commitment.Confirmed,
+            commitment,
             mint,
-            referenceId: `${job.id}`,
-            referenceType: QueueType.CloseAccount,
+            reference: `CloseAccount:${job.id}`,
             environment,
             index,
             account,

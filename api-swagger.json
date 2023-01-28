@@ -31,7 +31,37 @@
         "tags": ["account"]
       }
     },
-    "/api/account/info/{environment}/{index}/{accountId}": {
+    "/api/account/create": {
+      "post": {
+        "operationId": "createAccount",
+        "summary": "",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateAccountRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "default": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Transaction"
+                }
+              }
+            }
+          }
+        },
+        "tags": ["account"]
+      }
+    },
+    "/api/account/info/{environment}/{index}/{accountId}/{mint}": {
       "get": {
         "operationId": "getAccountInfo",
         "summary": "",
@@ -59,6 +89,22 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "name": "mint",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "commitment",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/Commitment"
+            }
           }
         ],
         "responses": {
@@ -68,36 +114,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/AccountInfo"
-                }
-              }
-            }
-          }
-        },
-        "tags": ["account"]
-      }
-    },
-    "/api/account/create": {
-      "post": {
-        "operationId": "createAccount",
-        "summary": "",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateAccountRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "default": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Transaction"
                 }
               }
             }
@@ -133,6 +149,14 @@
             "in": "path",
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "name": "commitment",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/Commitment"
             }
           }
         ],
@@ -186,6 +210,14 @@
             "in": "path",
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "name": "commitment",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/Commitment"
             }
           }
         ],
@@ -242,6 +274,14 @@
             "in": "path",
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "name": "commitment",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/Commitment"
             }
           }
         ],
@@ -365,6 +405,62 @@
           }
         },
         "tags": ["app"]
+      }
+    },
+    "/api/transaction/kinetic-transaction/{environment}/{index}": {
+      "get": {
+        "operationId": "getKineticTransaction",
+        "summary": "",
+        "parameters": [
+          {
+            "name": "environment",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "index",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "reference",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "signature",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Transaction"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": ["transaction"]
       }
     },
     "/api/transaction/latest-blockhash/{environment}/{index}": {
@@ -507,6 +603,14 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "name": "commitment",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/Commitment"
+            }
           }
         ],
         "responses": {
@@ -528,7 +632,7 @@
   "info": {
     "title": "@kin-kinetic/api",
     "description": "The OpenAPI definition of the Kinetic API",
-    "version": "1.0.0-rc.10",
+    "version": "1.0.0-rc.16",
     "contact": {}
   },
   "tags": [
@@ -569,11 +673,7 @@
           "mint": {
             "type": "string"
           },
-          "referenceId": {
-            "type": "string",
-            "nullable": true
-          },
-          "referenceType": {
+          "reference": {
             "type": "string",
             "nullable": true
           }
@@ -668,11 +768,7 @@
             "type": "integer",
             "nullable": true
           },
-          "referenceId": {
-            "type": "string",
-            "nullable": true
-          },
-          "referenceType": {
+          "reference": {
             "type": "string",
             "nullable": true
           },
@@ -757,6 +853,34 @@
           }
         }
       },
+      "CreateAccountRequest": {
+        "type": "object",
+        "properties": {
+          "commitment": {
+            "$ref": "#/components/schemas/Commitment"
+          },
+          "environment": {
+            "type": "string"
+          },
+          "index": {
+            "type": "integer"
+          },
+          "lastValidBlockHeight": {
+            "type": "integer"
+          },
+          "mint": {
+            "type": "string"
+          },
+          "reference": {
+            "type": "string",
+            "nullable": true
+          },
+          "tx": {
+            "type": "string"
+          }
+        },
+        "required": ["commitment", "environment", "index", "lastValidBlockHeight", "mint", "tx"]
+      },
       "TokenInfo": {
         "type": "object",
         "properties": {
@@ -817,38 +941,6 @@
           }
         },
         "required": ["account", "isMint", "isOwner", "isTokenAccount"]
-      },
-      "CreateAccountRequest": {
-        "type": "object",
-        "properties": {
-          "commitment": {
-            "$ref": "#/components/schemas/Commitment"
-          },
-          "environment": {
-            "type": "string"
-          },
-          "index": {
-            "type": "integer"
-          },
-          "lastValidBlockHeight": {
-            "type": "integer"
-          },
-          "mint": {
-            "type": "string"
-          },
-          "referenceId": {
-            "type": "string",
-            "nullable": true
-          },
-          "referenceType": {
-            "type": "string",
-            "nullable": true
-          },
-          "tx": {
-            "type": "string"
-          }
-        },
-        "required": ["commitment", "environment", "index", "lastValidBlockHeight", "mint", "tx"]
       },
       "BalanceToken": {
         "type": "object",
@@ -1152,11 +1244,7 @@
           "lastValidBlockHeight": {
             "type": "integer"
           },
-          "referenceId": {
-            "type": "string",
-            "nullable": true
-          },
-          "referenceType": {
+          "reference": {
             "type": "string",
             "nullable": true
           },
@@ -1165,6 +1253,15 @@
           }
         },
         "required": ["commitment", "environment", "index", "mint", "lastValidBlockHeight", "tx"]
+      },
+      "Context": {
+        "type": "object",
+        "properties": {
+          "slot": {
+            "type": "integer",
+            "nullable": true
+          }
+        }
       },
       "ConfirmationStatus": {
         "type": "string",
@@ -1191,15 +1288,23 @@
           }
         }
       },
-      "Message": {
+      "RpcResponseAndContext": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "context": {
+            "$ref": "#/components/schemas/Context"
+          },
+          "value": {
+            "$ref": "#/components/schemas/SignatureStatus"
+          }
+        },
+        "required": ["context", "value"]
       },
       "TransactionData": {
         "type": "object",
         "properties": {
           "message": {
-            "$ref": "#/components/schemas/Message"
+            "type": "object"
           },
           "signatures": {
             "type": "array",
@@ -1364,7 +1469,7 @@
             "type": "string"
           },
           "status": {
-            "$ref": "#/components/schemas/SignatureStatus"
+            "$ref": "#/components/schemas/RpcResponseAndContext"
           },
           "transaction": {
             "$ref": "#/components/schemas/TransactionResponse"

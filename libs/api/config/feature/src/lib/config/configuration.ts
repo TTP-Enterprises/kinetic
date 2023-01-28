@@ -30,6 +30,16 @@ export default () => ({
     passwordEnabled: process.env.AUTH_PASSWORD_ENABLED?.toLowerCase() !== 'false',
     users: process.env.AUTH_USERS || '',
   },
+  cache: {
+    solana: {
+      getLatestBlockhash: {
+        ttl: process.env.CACHE_SOLANA_GET_LATEST_BLOCKHASH_TTL,
+      },
+      getTokenAccounts: {
+        ttl: process.env.CACHE_SOLANA_GET_TOKEN_ACCOUNTS_TTL,
+      },
+    },
+  },
   cors: {
     bypass: !origins.length,
     origins,
@@ -64,9 +74,14 @@ export default () => ({
     port: parseInt(process.env.METRICS_PORT, 10),
   },
   port: parseInt(process.env.PORT, 10),
+  queue: {
+    closeAccount: {
+      concurrency: Number(process.env.QUEUE_CLOSE_ACCOUNT_CONCURRENCY ?? '1'),
+      start: process.env.QUEUE_CLOSE_ACCOUNT_START?.toLowerCase() !== 'false',
+    },
+  },
   redis: {
-    host: process.env.REDIS_HOST,
-    port: parseInt(process.env.REDIS_PORT, 10),
+    url: process.env.REDIS_URL,
   },
   solana: {
     devnet: {
